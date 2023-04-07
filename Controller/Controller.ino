@@ -201,7 +201,7 @@ bool zero(){
     }
     if (SERIAL_ON) {
         Serial.println(F(" Success"));
-        Serial.print(F("Zeroing Rotation"));
+        Serial.println(F("Zeroing Rotation"));
     }
     bool success_rotation = zeroRotation();
     if (!success_rotation) {
@@ -277,10 +277,15 @@ bool zeroTranslation(){
     int timer_serial = millis();
     int timer_bounce = millis();
     //translation_stepper.setCurrentPositionAsHomeAndStop();
-    translation_stepper.moveToHomeInMillimeters(-1, HOME_SPEED_TRANSLATION, 1, TRANSLATION_DRIVER_ZERO);
+    
     
     translation_stepper.setSpeedInMillimetersPerSecond(HOME_SPEED_TRANSLATION);
     double distance = DIRECTIONS[board_ID][TRANSLATION]*-1*MAX_TRANSLATIONS[board_ID];
+    Serial.print(F("The Distance is: "));
+    Serial.println(distance);
+
+    translation_stepper.moveToHomeInMillimeters(-1, HOME_SPEED_TRANSLATION, distance, TRANSLATION_DRIVER_ZERO);
+
     translation_stepper.setTargetPositionInMillimeters(distance);
     while(!translation_stepper.processMovement() && !translational_zero.sensorActive()){
         if (millis() - timer_bounce > 1) {
@@ -303,10 +308,10 @@ bool zeroTranslation(){
     if (translational_zero.sensorActive()) {
        // translation_stepper.setCurrentPositionAsHomeAndStop();
        translation_stepper.moveToHomeInMillimeters(-1, HOME_SPEED_TRANSLATION, 1, TRANSLATION_DRIVER_ZERO);
-        translation_stepper.setTargetPositionInMillimeters(DIRECTIONS[board_ID][TRANSLATION]);
+        translation_stepper.setTargetPositionInMillimeters(DIRECTIONS[board_ID][TRANSLATION]);                  //Single mm change... weird
         while(!translation_stepper.processMovement());
         //translation_stepper.setCurrentPositionAsHomeAndStop();
-        translation_stepper.moveToHomeInMillimeters(-1, HOME_SPEED_TRANSLATION, 1, TRANSLATION_DRIVER_ZERO);//THIS SPEED COULD NEED CHANGE
+        translation_stepper.moveToHomeInMillimeters(-1, HOME_SPEED_TRANSLATION, 1, TRANSLATION_DRIVER_ZERO);
         return true;
     } else {
        // translation_stepper.emergencyStop(false);
